@@ -7,7 +7,7 @@
 					<div class="grid-content grid-con-1">
 						<i class="el-icon-menu grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.itemSet }}</div>
+							<div class="grid-num">{{ totalNum.parentCount }}</div>
 							<div class="font">项目集</div>
 						</div>
 					</div>
@@ -18,8 +18,19 @@
 					<div class="grid-content grid-con-2">
 						<i class="el-icon-files grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.project }}</div>
+							<div class="grid-num">{{ totalNum.projectCount }}</div>
 							<div class="font">项目</div>
+						</div>
+					</div>
+				</el-card>
+			</div>
+			<div>
+				<el-card class="card" :body-style="{ padding: '0px' }">
+					<div class="grid-content grid-con-7">
+						<i class="el-icon-s-order grid-con-icon"></i>
+						<div class="grid-cont-right">
+							<div class="grid-num">{{ totalNum.taskCount }}</div>
+							<div class="font">总任务</div>
 						</div>
 					</div>
 				</el-card>
@@ -29,7 +40,7 @@
 					<div class="grid-content grid-con-3">
 						<i class="el-icon-notebook-2 grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.pendingTasks }}</div>
+							<div class="grid-num">{{ totalNum.taskPending }}</div>
 							<div class="font">待处理任务</div>
 						</div>
 					</div>
@@ -40,7 +51,7 @@
 					<div class="grid-content grid-con-4">
 						<i class="el-icon-time grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.notStarted }}</div>
+							<div class="grid-num">{{ totalNum.taskWait }}</div>
 							<div class="font">未开始</div>
 						</div>
 					</div>
@@ -51,8 +62,19 @@
 					<div class="grid-content grid-con-5">
 						<i class="el-icon-edit grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.inProgresst }}</div>
+							<div class="grid-num">{{ totalNum.taskDoing }}</div>
 							<div class="font">进行中</div>
+						</div>
+					</div>
+				</el-card>
+			</div>
+			<div>
+				<el-card class="card" :body-style="{ padding: '0px' }">
+					<div class="grid-content grid-con-8">
+						<i class="el-icon-document-checked grid-con-icon"></i>
+						<div class="grid-cont-right">
+							<div class="grid-num">{{ totalNum.taskDone }}</div>
+							<div class="font">已完成</div>
 						</div>
 					</div>
 				</el-card>
@@ -62,7 +84,7 @@
 					<div class="grid-content grid-con-6">
 						<i class="el-icon-circle-close grid-con-icon"></i>
 						<div class="grid-cont-right">
-							<div class="grid-num">{{ data.noFinish }}</div>
+							<div class="grid-num">{{ totalNum.taskDelayNoDone }}</div>
 							<div class="font">延期未完成</div>
 						</div>
 					</div>
@@ -70,7 +92,13 @@
 			</div>
 			<div class="delayRate">
 				<div class="postpone_msg">
-					<div class="num">{{ data.delayRate }}</div>
+					<div class="num">{{ totalNum.donePercentage +'%'  }}</div>
+					<div class="font">完成率</div>
+				</div>
+			</div>
+			<div class="delayRate">
+				<div class="postpone_msg">
+					<div class="num">{{ totalNum.delayPercentage +'%'}}</div>
 					<div class="font">延期率</div>
 				</div>
 			</div>
@@ -79,11 +107,11 @@
 			<el-button class="tableExport" icon="el-icon-s-data" @click="exportDialog = true">报表下载</el-button>
 		</div>
 		<!-- 表格 -->
-		<el-row style="padding: 10px">
+		<div style="padding: 10px">
 			<el-table
-				:data="tableList"
+				:data="lists.sliceList"
 				border
-				ref="tableDataRef"
+				height="530"
 				:header-cell-style="{
 					background: '#add8e6',
 					color: '#606266',
@@ -92,34 +120,42 @@
 				:cell-style="{ 'text-align': 'center' }"
 				:span-method="cellMerge"
 			>
-				<el-table-column prop="tname" label="项目集" width="200" fixed="left"></el-table-column>
-				<el-table-column prop="name" label="项目" width="250" fixed="left"></el-table-column>
-				<el-table-column prop="status" label="项目状态" fixed="left"></el-table-column>
-				<el-table-column prop="num1" label="待处理任务" fixed="left"></el-table-column>
-				<el-table-column prop="num2" label="未开始" fixed="left"></el-table-column>
-				<el-table-column prop="num3" label="进行中" fixed="left"></el-table-column>
-				<el-table-column prop="num4" label="延期未完成" fixed="left"></el-table-column>
-				<el-table-column prop="num5" label="延期已完成" fixed="left"></el-table-column>
-				<el-table-column prop="num6" label="延期率" fixed="left"></el-table-column>
+				<el-table-column prop="parentName" label="项目集" width="200"></el-table-column>
+				<el-table-column prop="projectName" label="项目" width="250"></el-table-column>
+				<el-table-column prop="status" label="项目状态">
+
+				</el-table-column>
+				<el-table-column prop="taskCount" label="总任务"></el-table-column>
+				<el-table-column prop="taskPending" label="待处理任务"></el-table-column>
+				<el-table-column prop="taskWait" label="未开始"></el-table-column>
+				<el-table-column prop="taskDoing" label="进行中"></el-table-column>
+				<el-table-column prop="taskDone" label="已完成"></el-table-column>
+				<el-table-column prop="taskDonePercentage" label="完成率"></el-table-column>
+				<el-table-column prop="taskDelayNoDone" label="延期未完成"></el-table-column>
+				<el-table-column prop="taskDelayDone" label="延期已完成"></el-table-column>
+				<el-table-column prop="taskDelayPercentage" label="延期率"></el-table-column>
 			</el-table>
-		</el-row>
+			
+		</div>
 		<!-- 分页 -->
 		<el-pagination
-			@size-change="handleSizeChange"
-			@current-change="handleCurrentChange"
-			:page-size="100"
-			layout="total, prev, pager, next"
-			:total="1000"
-		>
-		</el-pagination>
-
+      v-model="p"
+      :page-sizes="[10, 20, 30, 50]"
+      :page-size="s"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="totals"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    >
+    </el-pagination>
+		
 		<!-- 报表下载的对话框 -->
 		<el-dialog v-model="exportDialog" title="报表下载" width="30%">
 			<span>是否下载当前报表数据?</span>
 			<template #footer>
 				<span class="dialog-footer">
 					<el-button @click="exportDialog = false">取消</el-button>
-					<el-button type="primary" @click="exportDialog = false">确定</el-button>
+					<el-button type="primary" @click="exportFile">确定</el-button>
 				</span>
 			</template>
 		</el-dialog>
@@ -127,183 +163,81 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from "vue";
-// import { tableListMsg } from "@/request/api.js";
+import { reactive, ref, onMounted,toRefs } from "vue";
+import { tableListMsg,tableListTotalMsg } from "../../request/api";
+import { countTotal } from "../../components/common/mixin.js";
 import fileDownload from "js-file-download";
 import axios from "axios";
 export default {
 	name: "projectTable",
-	setup() {
+	setup(props,context) {
+
 		onMounted(() => {
-			getSpanArr(tableList, "tname");
+			getTableList()
+			getTotalNum()
 		});
-		const filterInfo = reactive({
+		let filterInfo = reactive({
 			p: 1,
 			s: 10,
 		});
 		//总条数
-		const total = ref(100);
+		let totals = ref(0);
 
-		const data = reactive({
-			itemSet: "2", //项目集
-			project: "12", //项目
-			pendingTasks: "3", //待处理任务
-			notStarted: "6", //未开始
-			inProgresst: "8", //进行中
-			noFinish: "1", //延期未完成
-			delayRate: "50%", //延期率
-		});
+		
+		let itemSet=ref(''); //项目集
+
 		let exportDialog = ref(false); //报表下载的对话框
 
 		//表格数据
-		const tableList = reactive([
-			{ id: 0, tname: "研发项目", name: "灵机云运营管理平台", status: "正常", num1: 11, num2: 11, num3: 11, num4: 11, num5: "11", num6: "50%" },
-			{
-				id: 1,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 2,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 3,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 4,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 5,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 6,
-				tname: "研发项目",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 7,
-				tname: "日常任务",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 8,
-				tname: "日常任务",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 9,
-				tname: "日常任务",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 10,
-				tname: "日常任务",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-			{
-				id: 11,
-				tname: "日常任务",
-				name: "灵机云运营管理平台",
-				status: "正常",
-				num1: 11,
-				num2: 11,
-				num3: 11,
-				num4: 11,
-				num5: "11",
-				num6: "50%",
-			},
-		]);
+		let lists=reactive({
+			tableList:[],
+			sliceList:[]
+		})
+
+		let p=ref(1)
+		let s=ref(10)
+
+
+
 
 		//1.分页方法
 		const handleCurrentChange = (val) => {
-			filterInfo.p = val;
+		p.value = val;
+			getTableList()
 		};
 		const handleSizeChange = (val) => {
-			filterInfo.s = val;
-		};
-
-		//2.获取表报数据
+			s.value = val;
+			getTableList()
+		}
+		//2.1 获取项目集报表统计数据
+		let totalNum=reactive({
+		})
+		function getTotalNum(){
+			tableListTotalMsg().then(res=>{
+				const {parentCount,projectCount,taskCount,taskPending,taskWait,taskDoing,taskDone,taskDelayNoDone,donePercentage,delayPercentage}=res.data
+				totalNum.parentCount=parentCount
+				totalNum.projectCount=projectCount
+				totalNum.taskCount=taskCount
+				totalNum.taskPending=taskPending
+				totalNum.taskWait=taskWait
+				totalNum.taskDoing=taskDoing
+				totalNum.taskDone=taskDone
+				totalNum.taskDelayNoDone=taskDelayNoDone
+				totalNum.donePercentage=donePercentage
+				totalNum.delayPercentage=delayPercentage
+			})
+		}
+		//2.2 获取表报数据
 		function getTableList() {
-			tableListMsg(filterInfo).then((res) => {
+			tableListMsg().then((res) => {
 				console.log(res);
+				let {data}=res
+				lists.tableList=data
+				lists.sliceList=lists.tableList.slice((p.value-1)*s.value,(p.value*s.value))
+				totals.value=data.length
+
+				//调用合并方法
+				getSpanArr(lists.tableList, "parentName");
 			});
 		}
 
@@ -327,6 +261,10 @@ export default {
 			let pos = 0; // 设置索引
 			spanArr = []; // 控制合并的数组
 			let dataP = JSON.parse(JSON.stringify(data));
+			//计算项目集
+			itemSet.value=groupBy(dataP, params).length
+
+
 			groupBy(dataP, params).map((v) => (arr = arr.concat(v)));
 			arr.map((res) => {
 				dataP.shift();
@@ -349,7 +287,7 @@ export default {
 				return cur;
 			}, {});
 		}
-		// 5.合并 tableData 数据
+		// // 5.合并 tableData 数据
 		function cellMerge({ row, column, rowIndex, columnIndex }) {
 			if (columnIndex === 0) {
 				const _row = spanArr[rowIndex];
@@ -363,41 +301,42 @@ export default {
 
 		//6.报表下载
 		function exportFile() {
-			filterInfo.p = "";
-			filterInfo.s = "";
+		
 			axios({
-				method: "post",
-				url: `${axios.defaults.baseURL}neworder/deal/manager/contractListExport`,
-				data: filterInfo,
+				method: "get",
+				url: `${axios.defaults.baseURL}zentao/ztProjectsReport/downloadReport`,
 				responseType: "blob",
 				headers: {
-					"Content-Type": "application/json",
+					"Content-Type": "application/x-www-form-urlencoded",
 				},
 			}).then((res) => {
-				//console.log(res);
 				fileDownload(res.data, "项目集报表.xlsx");
-				$emit("after-download");
-				filterInfo.p = 1;
-				filterInfo.s = 10;
-				getTableList();
+				context.emit("after-download");
 			});
 			exportDialog = false;
 		}
 
 		return {
-			data,
-			tableList,
+			itemSet,//项目集
 			filterInfo,
-			total,
+			totals,
+			p,
+			s,
 			handleCurrentChange,
 			handleSizeChange,
 			spanArr,
 			groupBy,
 			getSpanArr,
-			cellMerge,
+			cellMerge,	
 			exportFile,
+			totalNum,	
+			getTotalNum,//获取项目集报表统计数据
 			getTableList,
 			exportDialog,
+			lists,
+
+		
+			
 		};
 	},
 };
@@ -414,14 +353,14 @@ export default {
 }
 .card {
 	box-sizing: border-box;
-	width: 200px;
+	width: 150px;
 	height: 130px;
 	// margin-right: 100px;
 
 	.grid-con-icon {
 		box-sizing: border-box;
 		font-size: 50px;
-		width: 100px;
+		width: 70px;
 		height: 130px;
 		text-align: center;
 		line-height: 130px;
@@ -429,19 +368,19 @@ export default {
 	}
 	.grid-cont-right {
 		flex: 1;
-		text-align: center;
 		font-size: 14px;
 		color: #999;
 		.font {
 			font-size: 20x;
 			font-weight: bold;
 			color: rgb(2, 2, 26) !important;
+			text-align: center;
 		}
 	}
 	.grid-content {
 		display: flex;
 		align-items: center;
-		width: 180px;
+		width: 150px;
 		height: 130px;
 	}
 }
@@ -449,6 +388,7 @@ export default {
 .grid-num {
 	font-size: 30px;
 	font-weight: bold;
+	text-align: center;
 }
 .grid-con-1 {
 	.grid-con-icon {
@@ -493,6 +433,25 @@ export default {
 .grid-con-6 {
 	.grid-con-icon {
 		background: rgb(56, 211, 172);
+		text-align: center;
+	}
+	.grid-num {
+		color: rgb(45, 140, 240);
+	}
+}
+.grid-con-7 {
+	.grid-con-icon {
+		background: rgb(156, 151, 228);
+		text-align: center;
+	}
+	.grid-num {
+		color: rgb(45, 140, 240);
+	}
+}
+.grid-con-8 {
+	.grid-con-icon {
+		background: rgb(243, 123, 119);
+		text-align: center;
 	}
 	.grid-num {
 		color: rgb(45, 140, 240);
@@ -505,7 +464,7 @@ export default {
 	height: 130px;
 	text-align: center;
 	border-radius: 50%;
-	background-color: rgb(140, 223, 248);
+	background-color: rgb(118, 230, 215);
 	.postpone_msg {
 		margin-top: 40px;
 		.num {
@@ -516,6 +475,7 @@ export default {
 		.font {
 			font-size: 15px;
 			font-weight: bold;
+			
 			color: rgb(2, 2, 26) !important;
 		}
 	}
@@ -534,6 +494,10 @@ export default {
 //分页
 .el-pagination {
 	margin-top: 20px;
-	margin-left: 650px;
+	text-align: center;
+}
+
+.el-table {
+  overflow-y: auto !important;
 }
 </style>

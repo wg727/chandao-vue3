@@ -1,15 +1,15 @@
 <template>
-	<div style="padding: 10px; position: relative">
+	<div style="padding: 10px;  position: relative">
 		<!-- 执行-工时统计 -->
 		<div>
 			<el-tabs v-model="activeName" @tab-click="handleClick">
-				<el-tab-pane label="每日成员工时统计" name="first">
+				<el-tab-pane label="每日成员工时统计" name="first" >
 					<!-- card卡片 -->
 					<el-row class="header_card">
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{regisHours}}</div>
 									<div class="font">登记工时</div>
 								</div>
 							</el-card>
@@ -17,7 +17,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{regisNums}}</div>
 									<div class="font">登记次数</div>
 								</div>
 							</el-card>
@@ -25,7 +25,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{regisNum}}</div>
 									<div class="font">登记人数</div>
 								</div>
 							</el-card>
@@ -33,17 +33,18 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{PerHours}}</div>
 									<div class="font">人均工时</div>
 								</div>
 							</el-card>
 						</div>
 					</el-row>
 					<!-- 表格 -->
-					<el-row style="margin-top: 20px">
+					<el-row style="margin-top: 20px;">
 						<el-table
-							:data="memberTableList"
+							:data="lists.memberTableList"
 							border
+							width="700"
 							:header-cell-style="{
 								background: '#611ddf',
 								color: '#606266',
@@ -51,25 +52,25 @@
 							}"
 							:cell-style="{ 'text-align': 'center' }"
 						>
-							<el-table-column prop="member" label="成员" fixed="left"></el-table-column>
-							<el-table-column prop="totalNum" label="合计登记工时" fixed="left"></el-table-column>
-							<el-table-column prop="day1" label="2021年12月27日" fixed="left"></el-table-column>
-							<el-table-column prop="day2" label="2021年12月28日" fixed="left"></el-table-column>
-							<el-table-column prop="day3" label="2021年12月29日" fixed="left"></el-table-column>
-							<el-table-column prop="day4" label="2021年12月30日" fixed="left"></el-table-column>
-							<el-table-column prop="day5" label="2021年12月31日" fixed="left"></el-table-column>
-							<el-table-column prop="day6" label="2022年1月1日" fixed="left"></el-table-column>
-							<el-table-column prop="day7" label="2022年1月2日" fixed="left"></el-table-column>
+							<el-table-column prop="userName" label="成员" ></el-table-column>
+							<el-table-column prop="totalHour" label="合计登记工时" ></el-table-column>
+
+							<el-table-column v-for="(item,index) in betweenDate.betweenDateList" :key="index" :label="item">
+								<template v-slot="scope">
+									<span>{{scope.row.hourList[index]}}</span>
+								</template>
+							</el-table-column>
 						</el-table>
 					</el-row>
+
 				</el-tab-pane>
-				<el-tab-pane label="每日项目工时统计" name="second">
+				<el-tab-pane label="每日项目工时统计" name="second" >
 					<!-- card卡片 -->
 					<el-row class="header_card">
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proRegisHours}}</div>
 									<div class="font">登记工时</div>
 								</div>
 							</el-card>
@@ -77,7 +78,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{regisHoursNum}}</div>
 									<div class="font">登记次数</div>
 								</div>
 							</el-card>
@@ -85,7 +86,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proRegisNum}}</div>
 									<div class="font">登记项目</div>
 								</div>
 							</el-card>
@@ -93,16 +94,17 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proPerHours}}</div>
 									<div class="font">项目平均工时</div>
 								</div>
 							</el-card>
 						</div>
 					</el-row>
-					<el-row style="margin-top: 20px">
+						<el-row style="margin-top: 20px">
 						<el-table
-							:data="dayTableList"
+							:data="dayTableList.proList"
 							border
+							height="700"
 							:header-cell-style="{
 								background: '#611ddf',
 								color: '#606266',
@@ -111,19 +113,19 @@
 							:cell-style="{ 'text-align': 'center' }"
 							:span-method="dayTableMerge"
 						>
-							<el-table-column prop="proName" label="项目" fixed="left"></el-table-column>
-							<el-table-column  label="合计登记工时" fixed="left">
-								<span >{{list[0]}}</span>
+							<el-table-column prop="projectName" label="项目" ></el-table-column>
+							<el-table-column prop="totalHour" label="合计登记工时"   >
+								<template v-slot="scope">
+									<span v-if="scope.row.totalHour ==null">0</span>
+								</template>
 							</el-table-column>
-							<el-table-column prop="mokuai" label="模块" fixed="left"></el-table-column>
-							<el-table-column prop="totalNum" label="合计模块登记工时" fixed="left"></el-table-column>
-							<el-table-column prop="day1" label="2021年12月27日" fixed="left"></el-table-column>
-							<el-table-column prop="day2" label="2021年12月28日" fixed="left"></el-table-column>
-							<el-table-column prop="day3" label="2021年12月29日" fixed="left"></el-table-column>
-							<el-table-column prop="day4" label="2021年12月30日" fixed="left"></el-table-column>
-							<el-table-column prop="day5" label="2021年12月31日" fixed="left"></el-table-column>
-							<el-table-column prop="day6" label="2022年1月1日" fixed="left"></el-table-column>
-							<el-table-column prop="day7" label="2022年1月2日" fixed="left"></el-table-column>
+							<el-table-column prop="moduleName" label="模块" ></el-table-column>
+							<el-table-column prop="moduleTotalHour" label="合计模块登记工时" ></el-table-column>
+							<el-table-column v-for="(item,index) in betweenDate.betweenDateList" :key="item" :label="item">
+								<template v-slot="scope">
+									<span >{{scope.row.hourList[index]}}</span>
+								</template>
+							</el-table-column>
 						</el-table>
 					</el-row>
 				</el-tab-pane>
@@ -133,7 +135,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proPeopleList.proPeoHours}}</div>
 									<div class="font">登记工时</div>
 								</div>
 							</el-card>
@@ -141,7 +143,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proPeopleList.proPeoNum}}</div>
 									<div class="font">登记次数</div>
 								</div>
 							</el-card>
@@ -149,7 +151,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proPeopleList.proPeoNumber}}</div>
 									<div class="font">登记项目</div>
 								</div>
 							</el-card>
@@ -157,7 +159,7 @@
 						<div>
 							<el-card class="card">
 								<div class="grid-cont-right">
-									<div class="grid-num">12121</div>
+									<div class="grid-num">{{proPeopleList.proPeoPHours}}</div>
 									<div class="font">项目平均工时</div>
 								</div>
 							</el-card>
@@ -165,8 +167,9 @@
 					</el-row>
 					<el-row style="margin-top: 20px">
 						<el-table
-							:data="memberTableList"
+							:data="proPeopleList.proPeoList"
 							border
+							height="700"
 							:header-cell-style="{
 								background: '#611ddf',
 								color: '#606266',
@@ -174,15 +177,14 @@
 							}"
 							:cell-style="{ 'text-align': 'center' }"
 						>
-							<el-table-column prop="member" label="成员" fixed="left"></el-table-column>
-							<el-table-column prop="totalNum" label="合计登记工时" fixed="left"></el-table-column>
-							<el-table-column prop="day1" label="2021年12月27日" fixed="left"></el-table-column>
-							<el-table-column prop="day2" label="2021年12月28日" fixed="left"></el-table-column>
-							<el-table-column prop="day3" label="2021年12月29日" fixed="left"></el-table-column>
-							<el-table-column prop="day4" label="2021年12月30日" fixed="left"></el-table-column>
-							<el-table-column prop="day5" label="2021年12月31日" fixed="left"></el-table-column>
-							<el-table-column prop="day6" label="2022年1月1日" fixed="left"></el-table-column>
-							<el-table-column prop="day7" label="2022年1月2日" fixed="left"></el-table-column>
+							<el-table-column prop="userName" label="成员" ></el-table-column>
+							<el-table-column prop="totalHour" label="合计登记工时" ></el-table-column>
+							<el-table-column v-for="(item,index) in proPeopleList.dateList" :key="index" :label="item">
+								<template v-slot="scope">
+									<span>{{scope.row.hourList[index]}}</span>
+								</template>
+							</el-table-column>
+							
 						</el-table>
 					</el-row>
 				</el-tab-pane>
@@ -195,18 +197,21 @@
 					<el-form-item label="时间:">
 						<el-date-picker
 							v-model="timer"
-							type="daterange"
-							range-separator="至"
-							start-placeholder="开始"
-							end-placeholder="结束"
+							type="week"
+							:format="startTimeStamp + ' 至 ' + endTimeStamp"
+							placeholder="选择周"
+							:picker-options="onPicker"
 							@change="dateChange"
-						>
+							style="width:250px"
+							>
 						</el-date-picker>
+
+
 					</el-form-item>
 				</el-form>
 			</div>
 			<div>
-				<el-button class="tableExport" icon="el-icon-s-data">报表下载</el-button>
+				<el-button class="tableExport" @click="exportFile"  icon="el-icon-s-data" v-loading.fullscreen.lock="fullscreenLoading">报表下载</el-button>
 			</div>
 		</div>
 	</div>
@@ -214,152 +219,224 @@
 
 <script>
 import { reactive, ref, onMounted } from "vue";
-import { timeStr } from "../../components/common/mixin.js";
-// import { proViewListMsg,addproView ,editproView} from "@/request/api.js";
+import { timeFun,getBetweenDate,countTotal,timeStr} from "../../components/common/mixin.js";
+import { dayStafflList,dayProlList,proStaffList} from "../../request/api";
 import fileDownload from "js-file-download";
 import axios from "axios";
 export default {
 	name: "hoursStatistics",
-	setup() {
+	setup(props,context) {
 		onMounted(() => {
-			getSpanArr(dayTableList, "proName");
-			getSpanArr(dayTableList, "dengNum");
+
+			//每日成员工时-接口数据
+			defaultDate()
+			getTableList()
+
+			//每日项目-接口数据
+			getDayProMsg()
+
+			//项目成员-接口数据
+			getProStaffMsg()
+
 		});
 
-		//1.请求列表数据
-		const form = reactive({
-			startTime: "",
-			endTime: "",
-			p: "1",
-			s: "10",
-		});
+		
+		
+
 		//2.tab栏
 		const activeName = ref("first");
-		function handleClick(tab, event) {
-			// console.log(tab, event);
+		let elTabsName=ref('')  //// el-tabs切换获取name值
+		function handleClick(tab) {
+			timer.value=''
+			startTimeStamp.value=''
+			endTimeStamp.value=''
+			elTabsName.value=tab.props.label
+
 		}
 
 		//3.日期选择
-		const timer = ref("");
+		let onPicker=reactive({
+			firstDayOfWeek: 1,
+		})
+		let timer = ref("");
+		let startTimeStamp = ref("");
+		let endTimeStamp = ref("");
+		let betweenDate=reactive({
+			betweenDateList:[]
+		})
+
+		//默认日期
+		 function defaultDate(){
+			 var date=new Date()
+				let defTime= date.getTime()
+				startTimeStamp.value=timeFun(defTime-(24 * 60 * 60 * 1000) *6).slice(0,10)
+				endTimeStamp.value=timeFun(defTime).slice(0,10)
+				form.beginDateTime=timeFun(defTime-(24 * 60 * 60 * 1000) *6)
+				form.endDateTime=timeFun(defTime)
+				betweenDate.betweenDateList=getBetweenDate(startTimeStamp.value,endTimeStamp.value)
+		 }
+		//日期改变
 		function dateChange(val) {
-			if (val == null) {
-			} else {
-				let timers = JSON.parse(JSON.stringify(val));
-				form.startTime = timeStr(timers[0]);
-				form.endTime = timeStr(timers[1]);
-				console.log(form.startTime, form.endTime);
-			}
+				if(val===null || val===undefined){
+					return;
+				}else if(elTabsName.value=='每日成员工时统计'|| elTabsName.value=='' || elTabsName.value==null){
+					let timeStamp = val.getTime();
+					console.log(timeStamp);
+					startTimeStamp.value=timeFun(timeStamp).slice(0,10)
+					endTimeStamp.value=timeFun(timeStamp + (24 * 60 * 60 * 1000) *6).slice(0,10)
+					
+					form.beginDateTime=''
+					form.endDateTime=''
+					form.beginDateTime=timeFun(timeStamp)
+					form.endDateTime=timeFun(timeStamp + (24 * 60 * 60 * 1000) *6)
+					betweenDate.betweenDateList=[]
+					betweenDate.betweenDateList=getBetweenDate(startTimeStamp.value,endTimeStamp.value)
+					getTableList()
+					getDayProMsg()
+				}else if(elTabsName.value=='每日项目工时统计'){
+					let timeStamp = val.getTime();
+					startTimeStamp.value=timeFun(timeStamp).slice(0,10)
+					endTimeStamp.value=timeFun(timeStamp + (24 * 60 * 60 * 1000) *6).slice(0,10)
+					
+					form.beginDateTime=''
+					form.endDateTime=''
+					form.beginDateTime=timeFun(timeStamp)
+					form.endDateTime=timeFun(timeStamp + (24 * 60 * 60 * 1000) *6)
+					betweenDate.betweenDateList=[]
+					betweenDate.betweenDateList=getBetweenDate(startTimeStamp.value,endTimeStamp.value)
+					getTableList()
+					getDayProMsg()
+				}
+		}
+		
+		//报表导出
+		const fullscreenLoading=ref(false)
+		function exportFile(){
+			fullscreenLoading.value=true
+			setTimeout(() => {
+
+				if(elTabsName.value=='每日成员工时统计'|| elTabsName.value=='' || elTabsName.value==null){
+				axios({
+					method: "post",
+					data: form,
+					url: `${axios.defaults.baseURL}zentao/ztTaskestimate/downloadUserTaskHourReport`,
+					responseType: "blob",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}).then((res) => {
+					console.log(res);
+					var date = new Date();
+					let dTime = timeStr(date).slice(0,10);
+					fileDownload(res.data, `每日成员工时统计报表${"-"+dTime}.xlsx`);
+					context.emit("after-download");
+					fullscreenLoading.value=false
+				});
+				}else if(elTabsName.value=='每日项目工时统计'){
+					axios({
+						method: "post",
+						data: form,
+						url: `${axios.defaults.baseURL}zentao/ztTaskestimate/downloadProjectTaskHourReport`,
+						responseType: "blob",
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}).then((res) => {
+						console.log(res);
+						var date = new Date();
+						let dTime = timeStr(date).slice(0,10);
+						fileDownload(res.data, `项目工时统计报表${"-"+dTime}.xlsx`);
+						context.emit("after-download");
+						fullscreenLoading.value=false
+					});
+				}else if(elTabsName.value=='项目成员工时统计'){
+					axios({
+						method: "post",
+						data: form,
+						url: `${axios.defaults.baseURL}zentao/ztTaskestimate/downloadUserProjectTaskHourReport`,
+						responseType: "blob",
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}).then((res) => {
+						console.log(res);
+						var date = new Date();
+						let dTime = timeStr(date).slice(0,10);
+						fileDownload(res.data, `项目成员工时统计报表${"-"+dTime}.xlsx`);
+						context.emit("after-download");
+						fullscreenLoading.value=false
+					});
+				}
+			}, 3000);
 		}
 
-		//4.每日成员工时统计
-		const memberTableList = reactive([
-			{
-				member: "兰新宇",
-				totalNum: "40",
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-		]);
 
+		//4.每日成员工时统计
+		//4.1.请求列表数据
+		let form = reactive({
+			beginDateTime: "",
+			endDateTime: "",
+		});
+		let lists = reactive({memberTableList:[]});
+
+		let regisHours=ref('')//登记工时
+		let regisNums=ref('')//登记次数
+		let regisNum=ref('')//登记人数
+		let PerHours=ref('')//人均工时
+
+		//4.1获取每日成员工时统计
+		function getTableList() {
+			dayStafflList(form).then(res=>{
+				console.log(res);
+				let {list} =res.data
+				lists.memberTableList=list
+
+				regisHours.value = countTotal(list,'totalHour')  //登记工时计算
+				regisNum.value = list.length  //登记人数计算
+				PerHours.value = (regisHours.value / regisNum.value).toFixed(2)  //人均工时计算
+				regisNums.value=res.data.registerCount  ////登记次数
+			})
+		}
+		//.分页
+		let dayStafftotals=ref(0)
+		const dayStaffhandleCurrentChange = (val) => {
+			form.p = val;
+			getTableList()
+		};
+
+		// 成员工时统计报表Excel导出dayStaffFileExport
+
+		
+
+// ===============================================================================================
 		//5.每日项目工时统计
-		const dayTableList = reactive([
-			{
-				proName: "送餐机器人",
-				dengNum: "送餐机器人",
-				mokuai: "模块一",
-				totalNum: 1,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "送餐机器人",
-				dengNum: "送餐机器人",
-				mokuai: "模块二",
-				totalNum: 1,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "智能测温门岗机器人",
-				dengNum: "智能测温门岗机器人",
-				mokuai: "模块一",
-				totalNum: 2,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "智能测温门岗机器人",
-				dengNum: "智能测温门岗机器人",
-				mokuai: "模块二",
-				totalNum: 2,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "智能访客机器人（乐乐）",
-				dengNum: "智能访客机器人（乐乐）",
-				mokuai: "模块一",
-				totalNum: 3,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "智能访客机器人（乐乐）",
-				dengNum: "智能访客机器人（乐乐）",
-				mokuai: "模块二",
-				totalNum: 3,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-			{
-				proName: "智能访客机器人（乐乐）",
-				dengNum: "智能访客机器人（乐乐）",
-				mokuai: "模块三",
-				totalNum: 3,
-				day1: "8",
-				day2: "6",
-				day3: "6",
-				day4: "6",
-				day5: "6",
-				day6: "6",
-				day7: "6",
-			},
-		]);
+		const dayTableList = reactive({
+			proList:[]
+		});
+
+		let proRegisHours=ref('')//登记工时
+		let regisHoursNum=ref('')//登记次数
+		let proRegisNum=ref('')//登记项目
+		let proPerHours=ref('')//项目平均工时
+
+		// 5.0 请求接口数据
+		function getDayProMsg(){
+			dayProlList(form).then(res=>{
+				console.log(res);
+				let {list}=res.data
+				dayTableList.proList=list
+				//表格合并
+				getSpanArr(dayTableList.proList, "projectId");
+				// getSpanArr(dayTableList.proList, "totalHour");
+
+			proRegisHours.value=countTotal(list,'totalHour') //计算登记工时
+			regisHoursNum.value=res.data.registerCount  //计算登记次数
+			console.log(proRegisHours.value/proRegisNum.value);
+			proPerHours.value=(proRegisHours.value/proRegisNum.value).toFixed(2)
+
+			})
+		}
+
 		//5.1每日项目工时统计报表合并
 		let spanArr = reactive([]); // 合并的数组
 		//5.2获取合并行的位置和合并长度
@@ -373,13 +450,18 @@ export default {
 			});
 			return Object.values(groups);
 		}
-		console.log(groupBy(dayTableList, "proName"))
+
+		
 		// 5.3.计算 数据合并 索引
 		function getSpanArr(data, params) {
 			let arr = []; // 接收重构数组
 			let pos = 0; // 设置索引
 			spanArr = []; // 控制合并的数组
 			let dataP = JSON.parse(JSON.stringify(data));
+
+			//计算登记项目
+			proRegisNum.value=groupBy(data, params).length
+
 			groupBy(dataP, params).map((v) => (arr = arr.concat(v)));
 			arr.map((res) => {
 				dataP.shift();
@@ -420,23 +502,36 @@ export default {
 				};
 			}
 		}
-		//5.5 合计合并后的数据
-		for (let i = 0; i < groupBy(dayTableList, "proName").length; i++) {
-			let totalNum1= groupBy(dayTableList, "proName")[i].reduce(function (total, currentValue, currentIndex, arr) {
-        return total + currentValue.totalNum;
-    }, 0);
-		console.log(totalNum1);//2,4,9
+
+		
+// ===============================================================================================
+
+		//6.项目成员工时统计
 
 
+		let proPeopleList=reactive({
+				dateList:[],
+				proPeoList:[],
+				 proPeoHours:'',//登记工时
+				 proPeoNum:'',//登记次数
+	 			 proPeoNumber:'',//登记项目
+	 			 proPeoPHours:'',//项目平均工时
+		})
+		//6.1请求接口数据
+		function getProStaffMsg(){
+			proStaffList(form).then(res=>{
+				console.log(res);
+				let {list,projectNames}=res.data
+				proPeopleList.proPeoList=list
+				proPeopleList.dateList=projectNames
 
-			// for (let j = 0; j < groupBy(dayTableList, "proName")[i].length; j++) {
-			// 	if( groupBy(dayTableList, "proName")[i][j].){
-			// 	}
-			// }
-			
+				proPeopleList.proPeoHours=countTotal(list,'totalHour')
+				proPeopleList.proPeoNum=res.data.registerCount
+				proPeopleList.proPeoNumber=projectNames.length
+				proPeopleList.proPeoPHours=(proPeopleList.proPeoHours/proPeopleList.proPeoNumber).toFixed(2)
+			})
 		}
 
-		const list=reactive([2,4,9])
 
 
 		return {
@@ -446,13 +541,30 @@ export default {
 			//tab栏
 			activeName,
 			handleClick,
+			elTabsName,
+
+			fullscreenLoading,
+			exportFile,//报表导出
 
 			//日期选择
+			onPicker,
 			timer,
-			dateChange,
+			startTimeStamp,
+			endTimeStamp,
+			dateChange,	
+			betweenDate,
+			// defaultDate,
 
 			//每日成员工时统计
-			memberTableList,
+			lists,
+			...lists,
+			getTableList,
+			regisHours,
+			regisNum,
+			regisNums,
+			PerHours,
+			// dayStafftotals,	
+			// dayStaffhandleCurrentChange,
 
 			//每日项目工时统计
 			dayTableList,
@@ -460,8 +572,22 @@ export default {
 			groupBy,
 			getSpanArr,
 			dayTableMerge,
+			getDayProMsg,
+			// totals,
+			// handleCurrentChange,
+			proRegisHours,
+			proRegisNum,
+			regisHoursNum,
+			proPerHours,
+			
+			
 
-			list
+			//项目成员工时统计
+			proPeopleList,
+			getProStaffMsg,
+			// proPeopletotals,
+			// proPeopleCurrentChange
+
 		};
 	},
 };
@@ -509,4 +635,10 @@ export default {
 	font-size: 30px;
 	font-weight: bold;
 }
+
+
+.el-table {
+  overflow-y: auto !important;
+}
 </style>
+

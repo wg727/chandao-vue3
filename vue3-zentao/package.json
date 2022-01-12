@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "axios": "0.24.0",
+    "el-tree-transfer": "2.3.3",
     "element-plus": "1.0.2-beta.52",
+    "element-ui": "^2.15.6",
     "js-file-download": "0.4.12",
     "less": "4.1.2",
     "less-loader": "5.0.0",
@@ -19,7 +21,8 @@
     "vue-router": "^4.0.10",
     "vue-schart": "^2.0.0",
     "vuex": "^4.0.2",
-    "wangeditor": "^4.7.4"
+    "wangeditor": "^4.7.4",
+    "wl-tree-transfer": "^1.2.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.2.3",

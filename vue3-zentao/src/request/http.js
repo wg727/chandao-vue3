@@ -1,22 +1,15 @@
 import axios from 'axios'; // 引入axios
-import QS from 'qs'; // 引入qs模块，用来序列化post类型的数据
+// import QS from 'qs'; // 引入qs模块，用来序列化post类型的数据
 import { ElMessage } from 'element-plus';
-import { getCookie } from '@/utils/cookie';
+import { getCookie } from '../utils/cookie';
 
 // 环境的切换
-// 叶浪云   10.0.4.84
-// 张文星   10.0.32.240
-// 方孝梦   10.0.32.45 10.0.32.223
-// 叶浪云
-// let url = 'https://office.yunbiaokj.com:40019/'
-// 报表生产
-// let url = 'https://dopt.szkwrobot.com:10000/'
-let url = 'http://10.0.32.241:8089/'
-//let url = 'http://10.0.32.223:8089/'
-// let url = ' https://office.yunbiaokj.com:3105/'
-//let url = ' http://10.0.32.223:8089/'
-// let url = 'http://10.0.4.84:8089/'
-//  let url = 'http://10.0.4.93:10001/'
+
+// let url = 'http://10.0.32.241:8899/' 
+let url = 'http://10.0.32.223:8899/'    
+// let url = 'http://39.99.133.172:8899/'    
+// let url = 'http://pmuat.csstrobot.com/'    
+
 // let url = window.location.protocol + '//' + window.location.host + '/'
 
 if (process.env.NODE_ENV == 'development') {
@@ -34,11 +27,11 @@ axios.defaults.timeout = 300000; //超时时间
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 
 
-axios.defaults.headers.post['corTicket'] = '1_1635304234016';
-axios.defaults.headers.get['corTicket'] = '1_1635304234016';
+// axios.defaults.headers.post['corTicket'] = '1_1635304234016';
+// axios.defaults.headers.get['corTicket'] = '1_1635304234016';
 
-// axios.defaults.headers.post['corTicket'] = getCookie('ssoCorTicket');
-// axios.defaults.headers.get['corTicket'] = getCookie('ssoCorTicket');
+axios.defaults.headers.post['authorize'] = getCookie('authorize');
+axios.defaults.headers.get['authorize'] = getCookie('authorize');
 
 
 //响应拦截器
